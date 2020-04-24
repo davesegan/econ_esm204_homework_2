@@ -106,9 +106,9 @@ sector_d_plot
 
 lm_sector_d <- lm(mc_d ~ abatement, data = sector_d)
 
-# poly_sector_d <- lm(mc_d ~ poly(abatement, 3, data = sector_d))
+# poly_sector_d <- lm(mc_d ~ poly(abatement, 3, raw = TRUE, data = sector_d))
 
-# exp_sector_d <- nls(mc_d ~ exp(a+b*abatement), data = sector_d)
+# exp_sector_d <- nls(mc_d ~ exp(a+b*abatement), raw = TRUE, data = sector_d)
 
 predict_df_d <- predict(lm_sector_d, sector_d)
 
@@ -154,6 +154,8 @@ a_supply <- function(abatement) {y = a_coeff*abatement + a_const}
 
 a_demand <- function(abatement) {y = a_coeff*(a_emissions_current-a_emissions_new)+a_const}
 
+
+
 # Sector D
 d_coeff = 
 d_const = 
@@ -162,6 +164,30 @@ d_emissions_current = 300
 d_supply <- function(abatement) {y = d_coeff*abatement + d_const}
 
 d_demand <- function(abatement) {y = d_coeff*(d_emissions_current-d_emissions_new)+d_const}
+
+```
+
+### Question 3
+##### Policy options
+
+##### a. Cap on carbon
+```{r}
+# Sectors A, B, and C capped at 300 tons
+
+
+```
+
+##### b. Tax on carbon
+```{r}
+# What tax accomplishes desired reduction of 300 tons
+
+
+```
+
+##### c. Cap and trade
+```{r}
+# Outcome of trading if each sector gets 100 carbon credits
+
 
 ```
 
