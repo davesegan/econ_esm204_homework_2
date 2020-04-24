@@ -191,3 +191,8 @@ d_demand <- function(abatement) {y = d_coeff*(d_emissions_current-d_emissions_ne
 
 ```
 
+### Question 4
+##### Should country X (sector D) join a carbon cap and trade market in country Y?
+
+
+
