@@ -434,25 +434,67 @@ q_pred_df <- q_pred_df %>%
   mutate(q_b = b_abatement_fx(price)) %>% 
   mutate(q_c = c_abatement_fx(price)) %>% 
   mutate(total_abate = q_a + q_b + q_c)
+
+# This is a nice abatement plot...
+ggplot(data = q_pred_df, aes(y = price)) +
+  geom_line(aes(x = q_a), color = "red") +
+  geom_line(aes(x = q_b), color = "green") +
+  geom_line(aes(x = q_c), color = "blue") +
+  geom_line(aes(x = total_abate))
 ```
 
 And then, we can pull a lm for the sum total.
 
 ```{r}
+<<<<<<< HEAD
 total_abatement <- lm(total_abate ~ price, data = q_pred_df)
 total_abatement
 # And then write a function...
 tot_abate_fx <- function(price){
   5.219 * price + 13.763
 }
+=======
+total_abatement_q_lm <- lm(total_abate ~ price, data = q_pred_df)
+total_abatement_q_lm
+
+# And then write a function for quantity...
+tot_abate_q_fx <- function(price){
+  5.219 * price + 13.763
+}
+ # And for price.
+
+total_abatement_p_lm <- lm(price ~ total_abate, data = q_pred_df)
+total_abatement_p_lm
+
+# And write a function
+
+tot_abate_p_fx <- function(quantity){
+  0.1916 * quantity - 2.6369
+}
+
+>>>>>>> 75a9920e5e8f2fe91a10feafaa33cc58e4595927
 ```
 
 ##### a. Cap on carbon
 ```{r}
+<<<<<<< HEAD
 # Sectors A, B, and C each cut emissions by 100. new total is 300 tons.
 
 # Finding the intergal of MC curve
 # Sector A total cost: $2,730.5 
+=======
+# Sectors A, B, and C capped at 300 tons
+# We can easily calculate the cost per ton of 300 tons of abatement using our total abatement function...
+
+tot_abate_p_fx(300)
+
+# sum total is 54.8341 $/ton. 
+# We multiply this by 300 tons...
+
+tot_abate_p_fx(300) * 300
+
+# And the cost to society is $16,452.93
+>>>>>>> 75a9920e5e8f2fe91a10feafaa33cc58e4595927
 
 ```
 
