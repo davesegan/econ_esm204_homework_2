@@ -1,6 +1,6 @@
 ---
 title: "econ_hw2"
-author: "David Segan"
+author: "David Segan, Gavi Keyles, Gabe De La Rosa"
 date: "4/22/2020"
 output: html_document
 ---
@@ -157,7 +157,7 @@ predict_df_c <- predict(lm_sector_c, sector_c)
 
 df_c <- data.frame(sector_c, predict_df_c)
 
-summary(lm_sector_c)
+# summary(lm_sector_c)
 
 ggplot() +
   geom_line(data = lm_sector_c,
@@ -243,6 +243,32 @@ ggplot() +
 
 stargazer(lm_sector_d, type = "html")
 ```
+
+##### All sectors marginal abatement costs
+
+```{r}
+
+predict_mac_all <- data.frame(predict_df_a, predict_df_b, predict_df_c, predict_df_d)
+
+# ggplot() +
+#   geom_line(data = df_a,
+#             aes(x = abatement,
+#                 y = predict_df_a)) +
+#   geom_line(data = predict_df_b,
+#             aes(x = abatement,
+#                 y = predict_df_b)) +
+#   geom_line(data = df_c,
+#             aes(x = abatement,
+#                 y = predict_df_c)) +
+#   geom_line(data = df_d,
+#             aes(x = abatement,
+#                 y = predict_df_d)) +
+#   theme_light() +
+#   labs(title = "All sectors predicted marginal cost of abatement by abatement levels",
+#        x = "Abatement (Tons)",
+#        y = "Marginal Cost")
+```
+
 
 
 ### Question 2
@@ -348,22 +374,39 @@ ggplot(c_demand_df, aes(x = q_pollution_c, y = c_price)) +
 ##### Sector D
 ```{r}
 # Sector D
-d_coeff = 
-d_const = 
+d_coeff = 0.553
+d_const = -12.197
 d_emissions_current = 300
 
-d_supply <- function(abatement) {y = d_coeff*abatement + d_const}
+d_supply <- function(abatement) {d_coeff*abatement + d_const}
 
-d_demand <- function(abatement) {y = d_coeff*(d_emissions_current-d_emissions_new)+d_const}
+d_price <- function(q) {
+  a_coeff*(d_emissions_current-q) + d_const
+}
+
+q_pollution <- seq(0,300, by = 10)
+
+d_demand_df <- data.frame(q_pollution)
+
+d_demand_df <- d_demand_df %>% 
+  mutate(d_price = d_price(q_pollution))
+
+ggplot(data = d_demand_df, aes(x = q_pollution, y = d_price)) +
+  geom_line()
 
 ```
 
 ### Question 3
 ##### Policy options
 
+For each policy:
+(1) the total cost of meeting the target in country X,
+(2) the cost (or benefit) to each sector
+(3) the tax revenue generated.
+
 ##### a. Cap on carbon
 ```{r}
-# Sectors A, B, and C capped at 300 tons
+# Sectors A, B, and C each cut emissions by 100. new total is 300 tons.
 
 
 ```
