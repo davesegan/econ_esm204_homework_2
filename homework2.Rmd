@@ -511,6 +511,7 @@ tot_abate_p_fx(300) * 300
 First, let's make an aggregate demand for all of these...
 
 ```{r}
+# This is a vertical sum, not great
 demand_agg <- seq(0, 250, by = 10)
 agg_demand_df <- data.frame(demand_agg)
 agg_demand_df <- agg_demand_df %>% 
@@ -519,16 +520,52 @@ agg_demand_df <- agg_demand_df %>%
   mutate(c_p = c_demand(demand_agg)) %>% 
   mutate(total_p = a_p + b_p + c_p)
 
+# Let's make a horizontal sum...
+
+# We needa flip our functions
+view(a_price)
+
+a_q_demand <- function(price){
+  ((price + a_const)/a_coeff)+a_emissions_current
+}
+
+b_q_demand <- function(price) {
+ ((price + b_const)/b_coeff)+b_emissions_current
+}
+
+c_q_demand <- function(price) {
+  ((price + c_const)/c_coeff)+c_emissions_current
+}
+
+price <- seq(0, 300, by = 10)
+demand_q_pred_df <- data.frame(price)
+demand_q_pred_df <- q_pred_df %>% 
+  mutate(p_a = a_q_demand(price)) %>% 
+  mutate(p_b = b_q_demand(price)) %>% 
+  mutate(p_c = c_q_demand(price)) %>% 
+  mutate(total_demand = p_a + p_b + p_c)
+
+## Graph the aggregate demand curve...
+
+ggplot(demand_q_pred_df, aes(y = price)) +
+  geom_line(aes(x = p_a),
+            color = "red") +
+  geom_line(aes(x = p_b), 
+            color = "green") +
+  geom_line(aes(x = p_c),
+            color = "blue") +
+  geom_line(aes(x = total_demand))
+
 # graph this to double check its a vertical sum...
 
-ggplot(agg_demand_df, aes(x = demand_agg)) +
-  geom_line(aes(y = a_p),
-            color = "red") +
-  geom_line(aes(y = b_p), 
-            color = "green") +
-  geom_line(aes(y = c_p),
-            color = "blue") +
-  geom_line(aes(y = total_p))
+# ggplot(agg_demand_df, aes(x = demand_agg)) +
+#   geom_line(aes(y = a_p),
+#             color = "red") +
+#   geom_line(aes(y = b_p), 
+#             color = "green") +
+#   geom_line(aes(y = c_p),
+#             color = "blue") +
+#   geom_line(aes(y = horizontal_agg_demand))
 ```
 Then, we can pull the price and quantity models from this...
 
