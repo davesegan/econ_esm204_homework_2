@@ -269,12 +269,18 @@ b_emissions_current <- 200
 c_emissions_current <- 230
 d_emissions_current <- 300
 
+# Supply curves (marginal abatement costs)
+a_supply <- function(abatement) {a_coeff*abatement + a_const}
+b_supply <- function(abatement) {b_coeff*abatement + b_const}
+c_supply <- function(abatement) {c_coeff*abatement + c_const}
+d_supply <- function(abatement) {d_coeff*abatement + d_const}
+
 # Demand curves (marginal benefit of each additional ton of pollution)
 # q = new emissions level
 a_price <- function(q) {a_coeff*(a_emissions_current - q) + a_const}
 b_price <- function(q) {b_coeff*(b_emissions_current - q) + b_const}
 c_price <- function(q) {c_coeff*(c_emissions_current - q) + c_const}
-d_price <- function(q) {d_coeff*(d_emissions_current-q) + d_const}
+d_price <- function(q) {d_coeff*(d_emissions_current - q) + d_const}
 
 ```
 
