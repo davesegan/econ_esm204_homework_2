@@ -112,8 +112,8 @@ stargazer(linear_b, type = "html")
 # Sector C - MC curve
 # ----------------
 sector_c <- mc_sector %>%
-  select(abatement, mc_c) %>%
-  filter(abatement >= 40)
+  select(abatement, mc_c) # %>%
+  # filter(abatement >= 40)
 sector_c_plot <- ggplot(sector_c, aes(x = abatement, y = mc_c)) +
   geom_line() +
   labs(title = "Sector C estimates for marginal cost of abatement by abatement levels",
@@ -325,7 +325,7 @@ agg_abate_df <- agg_abate_df %>%
 
 Then, we can make a new set of lm's for `quantity` as a function of `price`:
 
-```{r abatement lm's}
+```{r abatement lms}
 # We don't have functions that predict the quantity of units abated based on price, so we'll have to make them...
 
 q_lm_a <- lm(abatement_agg ~ a_price, data = agg_abate_df)
