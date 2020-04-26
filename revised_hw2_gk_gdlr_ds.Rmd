@@ -522,6 +522,10 @@ c_100_permits_price <- c_supply(100)
 cost_a_3c <- integrate(a_abatement_fx, permits_traded_a, 100)$value
 cost_b_3c <- integrate(b_abatement_fx, permits_traded_b, 100)$value
 cost_c_3c <- integrate(c_abatement_fx, permits_traded_c, 100)$value
+
+# Total country cost
+
+country_cost_3c <- integrate(tot_abate_p_fx, 0, 300)$value
 ```
 
 
