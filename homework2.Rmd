@@ -338,6 +338,7 @@ And then we can project this onto a new data frame, with prices.
 First we gotta make new functions for all of em...
 
 ```{r abatement functions and graph}
+# These equations take a price, then spit out the amount abated for that price
 
 q_lm_a
 a_abatement_fx <- function(price) {
@@ -379,17 +380,19 @@ tot_abate_fx <- function(price){
 #####
 total_abatement_q_lm <- lm(total_abate ~ price, data = q_pred_df)
 total_abatement_q_lm
-# And then write a function for quantity...
+# And then write a function for quantity...given a price
 tot_abate_q_fx <- function(price){
   5.219 * price + 13.763
 }
- # And for price.
+ # And for price, given a quantity
 total_abatement_p_lm <- lm(price ~ total_abate, data = q_pred_df)
 total_abatement_p_lm
 # And write a function
 tot_abate_p_fx <- function(quantity){
   0.1916 * quantity - 2.6369
 }
+
+### This is Gavi's ###
 # To get price as a function of quantity instead of quantity as a function of price, we rearrange:
 tot_abate_fx_p_gavi <- function(abate_quantity){
   (abate_quantity - 13.763)/5.219
@@ -401,6 +404,7 @@ tot_abate_fx_p_gavi <- function(abate_quantity){
 ```
 
 ##### a. Cap on carbon
+##### (1) total cost of meeting the target in country X
 ```{r 300 ton cap on carbon}
 # Sectors A, B, and C each cut emissions by 100. new total is 300 tons.
 # Finding the intergal of MC curve
@@ -421,6 +425,24 @@ tot_abate_p_fx(300) * 300
 # "optimal" cost to society is $16,452.93, so this ain't efficient.
 ```
 
+##### (2) cost to each sector:
+
+```{r}
+a_supply(100)*100
+# $5,295.50
+
+b_supply(100)*100
+# $4,978.50
+
+c_supply(100)*100
+# 8423.40
+
+```
+
+##### (3) tax revenue generated:
+
+zero!
+
 ##### b. Tax on carbon
 ```{r}
 # What tax accomplishes desired reduction of 300 tons
@@ -428,12 +450,30 @@ tot_abate_p_fx(300) * 300
 # We can easily calculate the cost per ton of 300 tons of abatement using our total abatement function...
 tot_abate_p_fx(300)
 # sum total is 54.8341 $/ton. 
-# We multiply this by 300 tons...
-tot_abate_p_fx(300) * 300
-# And the cost to society is $16,452.93
 
 tot_abate_p_fx(0)
+# The intercept is at zero is -2.6369....does this matter? No, because there is currently zero tax. 
+
 ```
+
+##### (1) total cost of meeting this target to country x:
+
+##### (2) cost to each sector:
+
+
+
+##### (3) tax revenue generated:
+
+```{r}
+#To get the tax, we calculate the square with one side that's the tax (old marginal cost curve - new MCC = tax (we don't change slopes...)), and the other with the new amount of carbon produced (600 - 300 = 300)
+
+# We multiply this by 300 tons...
+tot_abate_p_fx(300) * 300
+
+# so the tax revenue is $16,452.93
+```
+
+
 
 ##### c. Cap and trade
 
@@ -462,6 +502,8 @@ ggplot(agg_demand_df, aes(x = demand_agg)) +
 Then, we can pull the price and quantity models from this...
 
 ```{r}
+
+# Price, given a quantity
 agg_demand_p <- lm(total_p ~ demand_agg , data = agg_demand_df)
 agg_demand_p
 
@@ -469,6 +511,7 @@ agg_demand_p_fx <- function(quantity){
   -2.295 * quantity + 440.984
 }
 
+#Quantity, given a price
 agg_demand_q <- lm(demand_agg ~ total_p, data = agg_demand_df)
 agg_demand_q
 
@@ -480,7 +523,6 @@ agg_demand_q_fx <- function(price){
 
 
 ```{r}
-# Outcome of trading if each sector gets 100 carbon credits
 # Outcome of trading if each sector gets 100 carbon credits
 # Now that we have the aggregate curve, we can use what Costello taught us in class to get the price at which 300 units of abatement occurs, and then plug our p back into our 3 individual curves to get the results.
 # First, plug in abatement (300) into aggregate curve function
