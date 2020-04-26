@@ -197,6 +197,7 @@ ggplot() +
 stargazer(lm_sector_d, type = "html")
 ```
 ##### All sectors marginal abatement costs
+
 ### Question 2
 ##### Demand for emissions
 ##### Sector A
@@ -235,11 +236,7 @@ b_emissions_current <- 200
   
 # From these, we can make supply curves...
 b_supply <- function(abatement) {b_coeff * abatement + b_const}
-# b_supply_df <- b_demand_df %>% 
-#   mutate(b_price = b_supply(q_pollution))
-# 
-# ggplot(b_supply_df, aes(x = q_pollution, y = b_price)) +
-#   geom_line()
+
 # And demand curves.
 b_price <- function(q){
   b_coeff*(b_emissions_current - q) + b_const
@@ -250,7 +247,7 @@ q_pollution <- seq(0, 300, by = 10)
 # And then, we can calculate a demand curve based on this...
 # By first turning it into a data frame,
 b_demand_df <- data.frame(q_pollution)
-# Then applying the b_price function to the quantity of good produced:
+# Then applying the b_price function to the quantity of pollution produced:
 b_demand_df <- b_demand_df %>% 
   mutate(b_price = b_price(q_pollution))
 # Then we can plot it!
@@ -316,7 +313,7 @@ Supply:
 We have all of our supply equations. We know that the aggregate abatement supply is the horizontal sum of all these curves...
 but, we're currently predicting the price from Q. So, we need to rearrange all these equations so they spit out a q:
 
-```{r}
+```{r abatement df}
 # Let's predict a df for all of these...
 abatement_agg <- seq(0, 500, by = 10)
 agg_abate_df <- data.frame(abatement_agg)
@@ -328,7 +325,9 @@ agg_abate_df <- agg_abate_df %>%
 
 Then, we can make a new set of lm's for `quantity` as a function of `price`:
 
-```{r}
+```{r abatement lm's}
+# We don't have functions that predict the quantity of units abated based on price, so we'll have to make them...
+
 q_lm_a <- lm(abatement_agg ~ a_price, data = agg_abate_df)
 q_lm_b <- lm(abatement_agg ~ b_price, data = agg_abate_df)
 q_lm_c <- lm(abatement_agg ~ c_price, data = agg_abate_df)
@@ -338,7 +337,8 @@ And then we can project this onto a new data frame, with prices.
 
 First we gotta make new functions for all of em...
 
-```{r}
+```{r abatement functions and graph}
+
 q_lm_a
 a_abatement_fx <- function(price) {
   1.949 * price - 3.226
@@ -369,7 +369,7 @@ ggplot(data = q_pred_df, aes(y = price)) +
 
 And then, we can pull a lm for the sum total.
 
-```{r}
+```{r total abatement quantity and price functions}
 total_abatement <- lm(total_abate ~ price, data = q_pred_df)
 total_abatement
 # And then write a function...
@@ -401,12 +401,24 @@ tot_abate_fx_p_gavi <- function(abate_quantity){
 ```
 
 ##### a. Cap on carbon
-```{r}
+```{r 300 ton cap on carbon}
 # Sectors A, B, and C each cut emissions by 100. new total is 300 tons.
 # Finding the intergal of MC curve
 # Sector A total cost: $2,730.5 
 # Sectors A, B, and C capped at 300 tons
 
+# We know each sector is capped at 100 tons, individually, so we can sum the three costs together...
+
+# Our supply functions tell us the price per ton, so we need to multiply them all by 100...
+
+(a_supply(100)*100) + (b_supply(100)*100) + (c_supply(100)*100)
+
+
+# So the total cost is $18,517.40
+
+# Let's compare this to an "optimal" cost...
+tot_abate_p_fx(300) * 300
+# "optimal" cost to society is $16,452.93, so this ain't efficient.
 ```
 
 ##### b. Tax on carbon
@@ -419,6 +431,8 @@ tot_abate_p_fx(300)
 # We multiply this by 300 tons...
 tot_abate_p_fx(300) * 300
 # And the cost to society is $16,452.93
+
+tot_abate_p_fx(0)
 ```
 
 ##### c. Cap and trade
