@@ -253,8 +253,6 @@ ggplot() +
 # Naming coefficients and current emission levels
 # coeff = abatement coefficient (slope of MAC curve)
 # const = constant (intercept of MAC curve)
-# q = new emissions level
-# _price = demand curve function = marginal benefit of each additional ton of pollution
 
 a_coeff <- lm_sector_a$coefficients[2]
 a_const <- lm_sector_a$coefficients[1]
@@ -265,10 +263,18 @@ c_const <- lm_sector_c$coefficients[1]
 d_coeff <- lm_sector_d$coefficients[2]
 d_const <- lm_sector_d$coefficients[1]
 
+# Current emissions
 a_emissions_current <- 170
 b_emissions_current <- 200
 c_emissions_current <- 230
 d_emissions_current <- 300
+
+# Demand curves (marginal benefit of each additional ton of pollution)
+# q = new emissions level
+a_price <- function(q) {a_coeff*(a_emissions_current - q) + a_const}
+b_price <- function(q) {b_coeff*(b_emissions_current - q) + b_const}
+c_price <- function(q) {c_coeff*(c_emissions_current - q) + c_const}
+d_price <- function(q) {d_coeff*(d_emissions_current-q) + d_const}
 
 ```
 
@@ -329,10 +335,7 @@ ggplot(data = b_demand_df, aes(x = q_pollution, y = b_price)) +
 # sector_c_new <- df_c %>%
 #   mutate(q = 230-predict_df_c)
 
-c_demand <- function(q) {
-  y = c_coeff*(c_emissions_current - q) + c_const
-  return(y)
-}
+c_demand <- function(q) {c_coeff*(c_emissions_current - q) + c_const}
 q_pollution_c <- seq(0, 300, by = 10)
 c_demand_df <- data.frame(q_pollution_c)
 c_demand_df <- c_demand_df %>%
@@ -348,7 +351,7 @@ c_supply <- function(abatement) {c_coeff * abatement + c_const}
 
 d_supply <- function(abatement) {d_coeff*abatement + d_const}
 d_price <- function(q) {
-  a_coeff*(d_emissions_current-q) + d_const
+  d_coeff*(d_emissions_current-q) + d_const
 }
 q_pollution <- seq(0,300, by = 10)
 d_demand_df <- data.frame(q_pollution)
