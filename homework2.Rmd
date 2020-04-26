@@ -260,8 +260,8 @@ ggplot(data = b_demand_df, aes(x = q_pollution, y = b_price)) +
 # Sector C
 sector_c_new <- df_c %>%
   mutate(q = 230-predict_df_c)
-c_coeff = 1.390
-c_const = -54.766
+c_coeff = 1.130
+c_const = -26.798
 c_emissions_current = 230
 c_demand <- function(q) {
   y = c_coeff*(c_emissions_current - q) + c_const
