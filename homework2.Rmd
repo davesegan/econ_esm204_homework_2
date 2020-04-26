@@ -517,7 +517,7 @@ agg_demand_df <- agg_demand_df %>%
   mutate(a_p = a_price(demand_agg)) %>% 
   mutate(b_p = b_price(demand_agg)) %>% 
   mutate(c_p = c_demand(demand_agg)) %>% 
-  mutate(total_p = a_q + b_q + c_q)
+  mutate(total_p = a_p + b_p + c_p)
 
 # graph this to double check its a vertical sum...
 
@@ -571,4 +571,97 @@ permits_traded_a + permits_traded_b + permits_traded_c
 
 ### Question 4
 ##### Should country X (sector D) join a carbon cap and trade market in country Y?
+
+```{r}
+# Country Y:
+# current emissions: 300 tons per year
+
+# Basically, we need to add sector D to the abatement graph then calculate a new aggregate cost curve
+
+lm_sector_d
+
+# Predicts the price...
+sector_d_cost_fx <- function(abatement){
+  0.5533 * abatement - 12.1969
+}
+
+# Predicts the quantity...
+sector_d_q_fx <- function(price){
+  (price + 12.1969) / 0.5533
+}
+
+# Add them together in a df, then make an aggregate quantity column...
+agg_abate_d_df <-  q_pred_df %>% 
+  mutate(q_d = sector_d_q_fx(price)) %>% 
+  mutate(q_agg = q_a + q_b + q_c + q_d)
+
+
+ggplot(agg_abate_d_df, aes(y = price)) +
+  geom_line(aes(x = q_a),
+            color = "red") +
+  geom_line(aes(x = q_b),
+            color = "blue") +
+  geom_line(aes(x = q_c),
+            color = "green") +
+  geom_line(aes(x = q_d),
+            color = "yellow") +
+  geom_line(aes(x = q_agg))
+  
+# Make a new aggregate cost curve and function
+
+agg_abate_d <- lm(price ~ q_agg, data = agg_abate_d_df)
+
+agg_abate_d
+
+agg_abate_d_fx <- function(abatement){
+  0.1423 * abatement - 5.0958
+}
+
+# And then use it to get the price. Note that the new total emissions is 600 tons
+
+agg_abate_d_fx(600)
+
+# Price of carbon is $80.2842 per ton
+
+# How much will each sector produce?
+
+# I want a quantity, given a price:
+
+a_abatement_fx(80.2842)
+# 153.2497
+
+b_abatement_fx(80.2842)
+# 182.394
+
+c_abatement_fx(80.2842)
+# 97.15645
+
+sector_d_q_fx(80.2842)
+
+# 167.1446
+
+
+#####
+# to double check...
+# 153.2497 + 182.394 + 97.15645 + 167.1446 = 600!
+
+# I can quantify the  benefit to Country Y (sector D):
+
+# We know the price per ton of carbon is $80.2842
+# And they're allotted 300 tons
+# And we predict they'd produce 167.1446
+
+##-------------
+# I'm stuck here. What price does D sell its credits at??
+##-------------
+
+
+# So the cost to them is...
+
+80.2842 * (300-167.1446)
+
+# They would make $10,666.19 selling carbon credits.
+
+
+```
 
