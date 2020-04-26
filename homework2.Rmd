@@ -453,7 +453,7 @@ total_abatement
 tot_abate_fx <- function(price){
   5.219 * price + 13.763
 }
-=======
+
 total_abatement_q_lm <- lm(total_abate ~ price, data = q_pred_df)
 total_abatement_q_lm
 
