@@ -344,6 +344,8 @@ c_demand_df <- c_demand_df %>%
 ggplot(c_demand_df, aes(x = q_pollution_c, y = c_price)) +
   geom_line()
 
+c_supply <- function(abatement) {c_coeff * abatement + c_const}
+
 
 ```
 
@@ -453,7 +455,7 @@ total_abatement
 tot_abate_fx <- function(price){
   5.219 * price + 13.763
 }
-=======
+#####
 total_abatement_q_lm <- lm(total_abate ~ price, data = q_pred_df)
 total_abatement_q_lm
 
@@ -472,6 +474,16 @@ tot_abate_p_fx <- function(quantity){
   0.1916 * quantity - 2.6369
 }
 
+# To get price as a function of quantity instead of quantity as a function of price, we rearrange:
+
+tot_abate_fx_p_gavi <- function(abate_quantity){
+  (abate_quantity - 13.763)/5.219
+}
+
+# Show your work so your friends can see if you're wrong
+# q = 5.219*p + 13.763
+# q - 13.763 = 5.219 p
+# (q - 13.763)/5.219 = p
 ```
 
 ##### a. Cap on carbon
@@ -509,6 +521,30 @@ tot_abate_p_fx(300) * 300
 ```{r}
 # Outcome of trading if each sector gets 100 carbon credits
 
+# Outcome of trading if each sector gets 100 carbon credits
+
+# Now that we have the aggregate curve, we can use what Costello taught us in class to get the price at which 300 units of abatement occurs, and then plug our p back into our 3 individual curves to get the results.
+
+# First, plug in abatement (300) into aggregate curve function
+
+permit_trading_price <- tot_abate_fx_p_gavi(300)
+
+# Just checking we did this the same way...yes!
+permit_trading_price_gabe <- tot_abate_p_fx(300)
+
+# Now, plug into individual abatement functions
+
+permits_traded_a <- a_abatement_fx(permit_trading_price)
+
+permits_traded_b <- b_abatement_fx(permit_trading_price)
+
+permits_traded_c <- c_abatement_fx(permit_trading_price)
+
+# Let's check that they add up to 300
+
+permits_traded_a + permits_traded_b + permits_traded_c
+
+# Rounding error, but pretty close!
 
 ```
 
