@@ -406,6 +406,13 @@ tot_abate_fx_p_gavi <- function(abate_quantity){
 # Finding the intergal of MC curve
 # Sector A total cost: $2,730.5 
 # Sectors A, B, and C capped at 300 tons
+
+```
+
+##### b. Tax on carbon
+```{r}
+# What tax accomplishes desired reduction of 300 tons
+
 # We can easily calculate the cost per ton of 300 tons of abatement using our total abatement function...
 tot_abate_p_fx(300)
 # sum total is 54.8341 $/ton. 
@@ -414,12 +421,50 @@ tot_abate_p_fx(300) * 300
 # And the cost to society is $16,452.93
 ```
 
-##### b. Tax on carbon
+##### c. Cap and trade
+
+First, let's make an aggregate demand for all of these...
+
 ```{r}
-# What tax accomplishes desired reduction of 300 tons
+demand_agg <- seq(0, 250, by = 10)
+agg_demand_df <- data.frame(demand_agg)
+agg_demand_df <- agg_demand_df %>% 
+  mutate(a_p = a_price(demand_agg)) %>% 
+  mutate(b_p = b_price(demand_agg)) %>% 
+  mutate(c_p = c_demand(demand_agg)) %>% 
+  mutate(total_p = a_q + b_q + c_q)
+
+# graph this to double check its a vertical sum...
+
+ggplot(agg_demand_df, aes(x = demand_agg)) +
+  geom_line(aes(y = a_p),
+            color = "red") +
+  geom_line(aes(y = b_p), 
+            color = "green") +
+  geom_line(aes(y = c_p),
+            color = "blue") +
+  geom_line(aes(y = total_p))
+```
+Then, we can pull the price and quantity models from this...
+
+```{r}
+agg_demand_p <- lm(total_p ~ demand_agg , data = agg_demand_df)
+agg_demand_p
+
+agg_demand_p_fx <- function(quantity){
+  -2.295 * quantity + 440.984
+}
+
+agg_demand_q <- lm(demand_agg ~ total_p, data = agg_demand_df)
+agg_demand_q
+
+agg_demand_q_fx <- function(price){
+  -0.4357 * price + 192.1499
+}
 ```
 
-##### c. Cap and trade
+
+
 ```{r}
 # Outcome of trading if each sector gets 100 carbon credits
 # Outcome of trading if each sector gets 100 carbon credits
@@ -428,7 +473,7 @@ tot_abate_p_fx(300) * 300
 permit_trading_price <- tot_abate_fx_p_gavi(300)
 # Just checking we did this the same way...yes!
 permit_trading_price_gabe <- tot_abate_p_fx(300)
-# Now, plug into individual abatement functions
+# Now, plug into individual abatement functions      
 permits_traded_a <- a_abatement_fx(permit_trading_price)
 permits_traded_b <- b_abatement_fx(permit_trading_price)
 permits_traded_c <- c_abatement_fx(permit_trading_price)
