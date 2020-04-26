@@ -655,6 +655,7 @@ sector_d_q_fx(80.2842)
 # I'm stuck here. What price does D sell its credits at??
 ##-------------
 
+# I think its the area under the curve for D, or the area from abating zero units to the market efficient number of units (167 or whatever...)
 
 # So the cost to them is...
 
