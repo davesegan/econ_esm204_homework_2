@@ -507,9 +507,21 @@ permit_trading_price_gabe <- tot_abate_p_fx(300)
 permits_traded_a <- a_abatement_fx(permit_trading_price)
 permits_traded_b <- b_abatement_fx(permit_trading_price)
 permits_traded_c <- c_abatement_fx(permit_trading_price)
+
 # Let's check that they add up to 300
 permits_traded_a + permits_traded_b + permits_traded_c
 # Rounding error, but pretty close!
+
+# Now let's find our price intercepts for the original permit allocations
+a_100_permits_price <- a_supply(100)
+b_100_permits_price <- b_supply(100)
+c_100_permits_price <- c_supply(100)
+
+# Integrate to find costs per sector
+
+cost_a_3c <- integrate(a_abatement_fx, permits_traded_a, 100)$value
+cost_b_3c <- integrate(b_abatement_fx, permits_traded_b, 100)$value
+cost_c_3c <- integrate(c_abatement_fx, permits_traded_c, 100)$value
 ```
 
 ### Question 4
