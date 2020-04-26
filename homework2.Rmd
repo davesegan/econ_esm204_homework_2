@@ -423,20 +423,33 @@ tot_abate_fx_p_gavi <- function(abate_quantity){
 # Let's compare this to an "optimal" cost...
 tot_abate_p_fx(300) * 300
 # "optimal" cost to society is $16,452.93, so this ain't efficient.
+
+
+# OR OR OR 
+
+# We sum the integral for all of these? See calc below...
+
+2730.50 + 2838.50 + 1473.40
+
+# Total cost to country X...$7042.40
 ```
 
 ##### (2) cost to each sector:
 
 ```{r}
-a_supply(100)*100
-# $5,295.50
+# We need to calculate the area under the curve for these...
 
-b_supply(100)*100
-# $4,978.50
+# Sector A
+integrate(a_supply, lower = 0, upper = 100)
+# $2,730.50
 
-c_supply(100)*100
-# 8423.40
+# Sector B
+integrate(b_supply, lower = 0, upper = 100)
+# $2,838.50
 
+# Sector C
+integrate(c_supply, lower = 0, upper = 100)
+# $1,473.40
 ```
 
 ##### (3) tax revenue generated:
@@ -457,6 +470,24 @@ tot_abate_p_fx(0)
 ```
 
 ##### (1) total cost of meeting this target to country x:
+
+```{r}
+
+### This is super incomplete and maybe the wrong start (from Gabe)
+
+# First, we need to find out how much each firm abates when the aggregate abatement is 300:
+
+a_abatement_fx(tot_abate_p_fx(300))
+
+b_abatement_fx(tot_abate_p_fx(300))
+
+c_abatement_fx(tot_abate_p_fx(300))
+
+
+# To double check...
+a_abatement_fx(tot_abate_p_fx(300)) + b_abatement_fx(tot_abate_p_fx(300)) + c_abatement_fx(tot_abate_p_fx(300))
+```
+
 
 ##### (2) cost to each sector:
 
