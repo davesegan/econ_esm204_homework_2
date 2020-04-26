@@ -10,16 +10,12 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
 ```{r}
-
 # Load libraries and bring in data
-
 library(tidyverse)
 library(janitor)
 library(stargazer)
-
 mc_sector <- readxl::read_xlsx("HW2_Data.xlsx") %>% 
   clean_names()
-
 ```
 
 ### Question 1
@@ -29,33 +25,25 @@ mc_sector <- readxl::read_xlsx("HW2_Data.xlsx") %>%
 # ----------------
 # Sector A - MC curve
 # ----------------
-
 sector_a <- mc_sector %>% 
   select(abatement, mc_a)
-
 sector_a_plot <- ggplot(sector_a, aes(x = abatement, y = mc_a)) + 
   geom_line() +
   labs(title = "Sector A estimates for marginal cost of abatement by abatement levels",
        x = "Abatement (Tons)",
        y = "Marginal Cost")
-
 sector_a_plot
-
 ```
 
 Marginal Cost = (m)*Abatement + (b)
-
 ```{r}
 # -----------------
 # Sector A - linear model overlayed with MC curve
 # -----------------
-
 lm_sector_a <- lm(mc_a ~ abatement, data = sector_a)
   
 predict_df_a <- predict(lm_sector_a, sector_a)
-
 df_a <- data.frame(sector_a, predict_df_a)
-
 ggplot() +
   geom_line(data = lm_sector_a,
              aes(x = abatement,
@@ -71,16 +59,12 @@ ggplot() +
        x = "Abatement (Tons)",
        y = "Marginal Cost")
 ```
-
 ```{r, results = "asis"}
-
 # -----------
 # Sector A - Linear model stats
 # -----------
-
 stargazer(lm_sector_a, type = "html")
 ```
-
 ##### Sector B
 ```{r sector B MC Curve}
 # ----------------
@@ -95,7 +79,6 @@ sector_b_plot <- ggplot(sector_b, aes(x = abatement, y = mc_b)) +
        y = "Marginal Cost ($/ton)")
 sector_b_plot
 ```
-
 ```{r B LM and MC}
 # -----------
 # Sector B - linear model overlayed with MC curve
@@ -123,42 +106,31 @@ Sector B Regression Table:
 ```{r B stargazer, results = "asis"}
 stargazer(linear_b, type = "html")
 ```
-
 ##### Sector C
 ```{r}
 # ----------------
 # Sector C - MC curve
 # ----------------
-
 sector_c <- mc_sector %>%
   select(abatement, mc_c) %>%
   filter(abatement >= 40)
-
 sector_c_plot <- ggplot(sector_c, aes(x = abatement, y = mc_c)) +
   geom_line() +
   labs(title = "Sector C estimates for marginal cost of abatement by abatement levels",
        x = "Abatement (Tons)",
        y = "Marginal Cost")
-
 sector_c_plot
-
 ```
-
 Marginal Cost = (m)*Abatement + (b)
-
 ```{r}
 # -----------------
 # Sector C - linear model overlayed with MC curve
 # -----------------
-
 lm_sector_c <- lm(mc_c ~ abatement, data = sector_c)
  
 predict_df_c <- predict(lm_sector_c, sector_c)
-
 df_c <- data.frame(sector_c, predict_df_c)
-
 # summary(lm_sector_c)
-
 ggplot() +
   geom_line(data = lm_sector_c,
              aes(x = abatement,
@@ -174,51 +146,35 @@ ggplot() +
        x = "Abatement (Tons)",
        y = "Marginal Cost")
 ```
-
 ```{r, results = "asis"}
-
 # -----------
 # Sector C - Linear model stats
 # -----------
-
 stargazer(lm_sector_c, type = "html")
-
 ```
-
-
 ##### Sector D
-
 ```{r}
 # ----------------
 # Sector D - MC curve
 # ----------------
-
 sector_d <- mc_sector %>% 
   select(abatement, mc_d)
-
 sector_d_plot <- ggplot(sector_d, aes(x = abatement, y = mc_d)) + 
   geom_line() +
   labs(title = "Sector D estimates for marginal cost of abatement by abatement levels",
        x = "Abatement (Tons)",
        y = "Marginal Cost")
-
 sector_d_plot
 ```
 ```{r}
 # -----------------
 # Sector D - linear model overlayed with MC curve
 # -----------------
-
 lm_sector_d <- lm(mc_d ~ abatement, data = sector_d)
-
 # poly_sector_d <- lm(mc_d ~ poly(abatement, 3, raw = TRUE, data = sector_d))
-
 # exp_sector_d <- nls(mc_d ~ exp(a+b*abatement), raw = TRUE, data = sector_d)
-
 predict_df_d <- predict(lm_sector_d, sector_d)
-
 df_d <- data.frame(sector_d, predict_df_d)
-
 ggplot() +
   geom_line(data = lm_sector_d,
              aes(x = abatement,
@@ -234,35 +190,24 @@ ggplot() +
        x = "Abatement (Tons)",
        y = "Marginal Cost")
 ```
-
 ```{r, results = "asis"}
-
 # -----------
 # Sector D - Model stats
 # -----------
-
 stargazer(lm_sector_d, type = "html")
 ```
-
 ##### All sectors marginal abatement costs
-
-
 ### Question 2
 ##### Demand for emissions
-
 ##### Sector A
 ```{r}
-
 # Sector A
 sector_a_new <- df_a %>% 
   mutate(q = 170-predict_df_a)
-
 a_coeff = 0.513
 a_const = 1.655
 a_emissions_current = 170
-
 a_supply <- function(abatement) {a_coeff*abatement + a_const}
-
 a_price <- function(q) {
   a_coeff*(a_emissions_current-q) + a_const
 }
@@ -277,15 +222,10 @@ a_demand_df <- a_demand_df %>%
 ggplot(data = a_demand_df, aes(x = q_pollution, y = a_price)) +
   geom_line()
 ```
-
 ##### Sector B
-
 Now, we needa get demand curves from this. We know sector B currenty produces 200 tons of CO2.
-
 We know the equation of the cost curves for abatement is...
-
 price = 0.392 * abatement + 8.785
-
 ```{r B demand curve}
 ## b_coeff is the slope of the supply curve for abatement
 ## b_const is the intercept of the supply curve for abatement
@@ -320,31 +260,23 @@ ggplot(data = b_demand_df, aes(x = q_pollution, y = b_price)) +
 
 ##### Sector C
 ```{r}
-
 # Sector C
-
 sector_c_new <- df_c %>%
   mutate(q = 230-predict_df_c)
-
 c_coeff = 1.390
 c_const = -54.766
 c_emissions_current = 230
-
 c_demand <- function(q) {
   y = c_coeff*(c_emissions_current - q) + c_const
   return(y)
 }
-
 q_pollution_c <- seq(0, 300, by = 10)
 c_demand_df <- data.frame(q_pollution_c)
-
 c_demand_df <- c_demand_df %>%
   mutate(c_price = c_demand(q_pollution_c))
-
 ggplot(c_demand_df, aes(x = q_pollution_c, y = c_price)) +
   geom_line()
-
-
+c_supply <- function(abatement) {c_coeff * abatement + c_const}
 ```
 
 ##### Sector D
@@ -353,23 +285,16 @@ ggplot(c_demand_df, aes(x = q_pollution_c, y = c_price)) +
 d_coeff = 0.553
 d_const = -12.197
 d_emissions_current = 300
-
 d_supply <- function(abatement) {d_coeff*abatement + d_const}
-
 d_price <- function(q) {
   a_coeff*(d_emissions_current-q) + d_const
 }
-
 q_pollution <- seq(0,300, by = 10)
-
 d_demand_df <- data.frame(q_pollution)
-
 d_demand_df <- d_demand_df %>% 
   mutate(d_price = d_price(q_pollution))
-
 ggplot(data = d_demand_df, aes(x = q_pollution, y = d_price)) +
   geom_line()
-
 ```
 
 ### Question 3
@@ -434,7 +359,6 @@ q_pred_df <- q_pred_df %>%
   mutate(q_b = b_abatement_fx(price)) %>% 
   mutate(q_c = c_abatement_fx(price)) %>% 
   mutate(total_abate = q_a + q_b + q_c)
-
 # This is a nice abatement plot...
 ggplot(data = q_pred_df, aes(y = price)) +
   geom_line(aes(x = q_a), color = "red") +
@@ -446,74 +370,73 @@ ggplot(data = q_pred_df, aes(y = price)) +
 And then, we can pull a lm for the sum total.
 
 ```{r}
-
 total_abatement <- lm(total_abate ~ price, data = q_pred_df)
 total_abatement
 # And then write a function...
 tot_abate_fx <- function(price){
   5.219 * price + 13.763
 }
-
+#####
 total_abatement_q_lm <- lm(total_abate ~ price, data = q_pred_df)
 total_abatement_q_lm
-
 # And then write a function for quantity...
 tot_abate_q_fx <- function(price){
   5.219 * price + 13.763
 }
  # And for price.
-
 total_abatement_p_lm <- lm(price ~ total_abate, data = q_pred_df)
 total_abatement_p_lm
-
 # And write a function
-
 tot_abate_p_fx <- function(quantity){
   0.1916 * quantity - 2.6369
 }
-
+# To get price as a function of quantity instead of quantity as a function of price, we rearrange:
+tot_abate_fx_p_gavi <- function(abate_quantity){
+  (abate_quantity - 13.763)/5.219
+}
+# Show your work so your friends can see if you're wrong
+# q = 5.219*p + 13.763
+# q - 13.763 = 5.219 p
+# (q - 13.763)/5.219 = p
 ```
 
 ##### a. Cap on carbon
 ```{r}
-
 # Sectors A, B, and C each cut emissions by 100. new total is 300 tons.
-
 # Finding the intergal of MC curve
 # Sector A total cost: $2,730.5 
-
-
 # Sectors A, B, and C capped at 300 tons
 # We can easily calculate the cost per ton of 300 tons of abatement using our total abatement function...
-
 tot_abate_p_fx(300)
-
 # sum total is 54.8341 $/ton. 
 # We multiply this by 300 tons...
-
 tot_abate_p_fx(300) * 300
-
 # And the cost to society is $16,452.93
-
 ```
 
 ##### b. Tax on carbon
 ```{r}
 # What tax accomplishes desired reduction of 300 tons
-
-
-
 ```
 
 ##### c. Cap and trade
 ```{r}
 # Outcome of trading if each sector gets 100 carbon credits
-
-
+# Outcome of trading if each sector gets 100 carbon credits
+# Now that we have the aggregate curve, we can use what Costello taught us in class to get the price at which 300 units of abatement occurs, and then plug our p back into our 3 individual curves to get the results.
+# First, plug in abatement (300) into aggregate curve function
+permit_trading_price <- tot_abate_fx_p_gavi(300)
+# Just checking we did this the same way...yes!
+permit_trading_price_gabe <- tot_abate_p_fx(300)
+# Now, plug into individual abatement functions
+permits_traded_a <- a_abatement_fx(permit_trading_price)
+permits_traded_b <- b_abatement_fx(permit_trading_price)
+permits_traded_c <- c_abatement_fx(permit_trading_price)
+# Let's check that they add up to 300
+permits_traded_a + permits_traded_b + permits_traded_c
+# Rounding error, but pretty close!
 ```
 
 ### Question 4
 ##### Should country X (sector D) join a carbon cap and trade market in country Y?
-
-
 
