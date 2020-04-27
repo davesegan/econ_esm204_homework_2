@@ -462,7 +462,7 @@ full_abate_df_Y <- full_abatement_p_df %>%
 total_abate_Y_lm <- lm(price_abatement ~ total_abate_Y, data = full_abate_df_Y) # Make a model and a function
 total_ab_Y_coeff <- total_abate_Y_lm$coefficients[2]
 total_ab_Y_const <- total_abate_Y_lm$coefficients[1]
-total_abate_Y_fx <- function(abatement){total_ab_Y_p_coeff * abatement + total_ab_Y_p_const} 
+total_abate_Y_fx <- function(abatement){total_ab_Y_coeff * abatement + total_ab_Y_const} 
 price_Y_captrade <- total_abate_Y_fx(300) # New price at the required level of abatement...
 a_Y_quant <- a_abatement(price_Y_captrade) # Then, new quantity at equilibrium...
 b_Y_quant <- b_abatement(price_Y_captrade)
@@ -477,13 +477,12 @@ d_Y_cost <- integrate(d_supply, 0, d_Y_quant)$value
 a_Y_diff <- integrate(a_supply, a_Y_quant, permits_traded_a)$value
 b_Y_diff <- integrate(b_supply, b_Y_quant, permits_traded_b)$value
 c_Y_diff <- integrate(c_supply, c_Y_quant, permits_traded_c)$value
-d_Y_diff <- integrate(d_supply, d_Y_quant, 300 - d_Y_quant)$value ##### I dunno if this is right
+d_Y_diff <- integrate(d_supply, 0, 300 - d_Y_quant)$value 
 
-a_total_Y <- a_Y_cost + a_Y_diff # This SHOULD be the new cost to each sector, unsure for D
+a_total_Y <- a_Y_cost + a_Y_diff 
 b_total_Y <- b_Y_cost + b_Y_diff
 c_total_Y <- c_Y_cost + c_Y_diff
 d_total_Y <- d_Y_cost + d_Y_diff
 
 cost_captrade_country_x <- integrate(total_abatement_p_fx, abatement_tax, price_Y_captrade)
-cost_captrade_country_y <- 
 ```
