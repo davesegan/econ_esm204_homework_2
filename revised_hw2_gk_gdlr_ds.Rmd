@@ -339,9 +339,6 @@ total_abatement_p_const <- lm_total_price_a$coefficients[1]
 total_abatement_p_fx <- function(total_abatement){
   total_abatement_p_coeff * total_abatement +total_abatement_p_const
 } 
-
-
-
 ```
 
 ##### a. Cap on carbon
@@ -413,119 +410,30 @@ X_revenue_tax <- (300 * abatement_tax)
 X_revenue_tax
 ```
 ##### c. Cap and trade
-
-First, let's make an aggregate demand for all of these...
-
-```{r}
-# This is a vertical sum, not great
-demand_agg <- seq(0, 250, by = 10)
-agg_demand_df <- data.frame(demand_agg)
-agg_demand_df <- agg_demand_df %>% 
-  mutate(a_p = a_price(demand_agg)) %>% 
-  mutate(b_p = b_price(demand_agg)) %>% 
-  mutate(c_p = c_demand(demand_agg)) %>% 
-  mutate(total_p = a_p + b_p + c_p)
-
-# Let's make a horizontal sum...
-
-# We needa flip our functions
-view(a_price)
-
-a_q_demand <- function(price){
-  ((price + a_const)/a_coeff)+a_emissions_current
-}
-
-b_q_demand <- function(price) {
- ((price + b_const)/b_coeff)+b_emissions_current
-}
-
-c_q_demand <- function(price) {
-  ((price + c_const)/c_coeff)+c_emissions_current
-}
-
-price <- seq(0, 300, by = 10)
-demand_q_pred_df <- data.frame(price)
-demand_q_pred_df <- q_pred_df %>% 
-  mutate(p_a = a_q_demand(price)) %>% 
-  mutate(p_b = b_q_demand(price)) %>% 
-  mutate(p_c = c_q_demand(price)) %>% 
-  mutate(total_demand = p_a + p_b + p_c)
-
-## Graph the aggregate demand curve...
-
-ggplot(demand_q_pred_df, aes(y = price)) +
-  geom_line(aes(x = p_a),
-            color = "red") +
-  geom_line(aes(x = p_b), 
-            color = "green") +
-  geom_line(aes(x = p_c),
-            color = "blue") +
-  geom_line(aes(x = total_demand))
-
-# graph this to double check its a vertical sum...
-
-# ggplot(agg_demand_df, aes(x = demand_agg)) +
-#   geom_line(aes(y = a_p),
-#             color = "red") +
-#   geom_line(aes(y = b_p), 
-#             color = "green") +
-#   geom_line(aes(y = c_p),
-#             color = "blue") +
-#   geom_line(aes(y = horizontal_agg_demand))
-```
-Then, we can pull the price and quantity models from this...
-
-```{r}
-
-# Price, given a quantity
-agg_demand_p <- lm(total_p ~ demand_agg , data = agg_demand_df)
-agg_demand_p
-
-agg_demand_p_fx <- function(quantity){
-  -2.295 * quantity + 440.984
-}
-
-#Quantity, given a price
-agg_demand_q <- lm(demand_agg ~ total_p, data = agg_demand_df)
-agg_demand_q
-
-agg_demand_q_fx <- function(price){
-  -0.4357 * price + 192.1499
-}
-```
-
-
-
+##### (1) Cost to Country X:
 ```{r}
 # Outcome of trading if each sector gets 100 carbon credits
-# Now that we have the aggregate curve, we can use what Costello taught us in class to get the price at which 300 units of abatement occurs, and then plug our p back into our 3 individual curves to get the results.
-# First, plug in abatement (300) into aggregate curve function
-permit_trading_price <- tot_abate_fx_p_gavi(300)
-# Just checking we did this the same way...yes!
-permit_trading_price_gabe <- tot_abate_p_fx(300)
-# Now, plug into individual abatement functions      
-permits_traded_a <- a_abatement_fx(permit_trading_price)
-permits_traded_b <- b_abatement_fx(permit_trading_price)
-permits_traded_c <- c_abatement_fx(permit_trading_price)
+permit_trading_price <- total_abatement_p_fx(300) # First, get equilibrium trading price
+permits_traded_a <- a_abatement(permit_trading_price)# Now, plug into individual abatement functions
+permits_traded_b <- b_abatement(permit_trading_price)# This is the total q each sector abates
+permits_traded_c <- c_abatement(permit_trading_price)
+permits_traded_a + permits_traded_b + permits_traded_c # Let's check that they add up to 300
 
-# Let's check that they add up to 300
-permits_traded_a + permits_traded_b + permits_traded_c
-# Rounding error, but pretty close!
+### This isn't used ###
+diff_a_3c <- integrate(a_abatement, permits_traded_a, 100)$value # Integrate to find costs per sector
+diff_b_3c <- integrate(b_abatement, permits_traded_b, 100)$value # The difference in cost between a CAP and a CAP AND TRADE to each sector.
+diff_c_3c <- integrate(c_abatement, permits_traded_c, 100)$value
+### --- ###
 
-# Now let's find our price intercepts for the original permit allocations
-a_100_permits_price <- a_supply(100)
-b_100_permits_price <- b_supply(100)
-c_100_permits_price <- c_supply(100)
-
-# Integrate to find costs per sector
-
-cost_a_3c <- integrate(a_abatement_fx, permits_traded_a, 100)$value
-cost_b_3c <- integrate(b_abatement_fx, permits_traded_b, 100)$value
-cost_c_3c <- integrate(c_abatement_fx, permits_traded_c, 100)$value
+cost_CT_a <- integrate(a_abatement, 0, permits_traded_a)$value # Integrate from 0 to new trading equilibrium to find the abatement costs to each sector.
+cost_CT_b <- integrate(b_abatement, 0, permits_traded_b)$value
+cost_CT_c <- integrate(c_abatement, 0, permits_traded_c)$value
+cost_CT_a
+cost_CT_b
+cost_CT_c
 
 # Total country cost
-
-country_cost_3c <- integrate(tot_abate_p_fx, 0, 300)$value
+country_cost_3c <- integrate(total_abatement_fx, 0, 300)$value
 ```
 
 
