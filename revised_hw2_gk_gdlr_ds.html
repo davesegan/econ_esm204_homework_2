@@ -1071,15 +1071,12 @@ X_total_cost # So, they actually benefit.</code></pre>
 a_tax_abated &lt;- a_abatement(abatement_tax) # Quantity each sector abates...
 b_tax_abated &lt;- b_abatement(abatement_tax)
 c_tax_abated &lt;- c_abatement(abatement_tax)
-a_tax_cost &lt;- integrate(a_supply, lower = 0, upper = a_tax_abated) # Cost under the abatement curves
-b_tax_cost &lt;- integrate(b_supply, lower = 0, upper = b_tax_abated)
-c_tax_cost &lt;- integrate(c_supply, lower = 0, upper = c_tax_abated)
-a_tax_cost$value[1]</code></pre>
-<pre><code>## [1] 3059.394</code></pre>
-<pre class="r"><code>b_tax_cost$value[1]</code></pre>
-<pre><code>## [1] 3911.296</code></pre>
-<pre class="r"><code>c_tax_cost$value[1]</code></pre>
-<pre><code>## [1] 1072.122</code></pre>
+a_tax_cost &lt;- integrate(a_supply, lower = 0, upper = a_tax_abated)$value # Cost under the abatement curves
+b_tax_cost &lt;- integrate(b_supply, lower = 0, upper = b_tax_abated)$value
+c_tax_cost &lt;- integrate(c_supply, lower = 0, upper = c_tax_abated)$value
+a_tax_total_cost &lt;- a_tax_abated*(abatement_tax) + a_tax_cost
+b_tax_total_cost &lt;- b_tax_abated*(abatement_tax) + b_tax_cost
+c_tax_total_cost &lt;- c_tax_abated*(abatement_tax) + c_tax_cost</code></pre>
 </div>
 <div id="tax-revenue-generated-1" class="section level5">
 <h5>(3) tax revenue generated:</h5>
