@@ -1,12 +1,12 @@
 ---
-title: "econ_hw2_clean"
+title: "Appendix"
 author: "David Segan, Gavi Keyles, Gabe De La Rosa"
 date: "4/26/2020"
 output: html_document
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
 ```{r, include = FALSE}
@@ -74,11 +74,11 @@ d_pollution <- function(d_price) {d_emissions_current - ((d_price - d_const)/d_c
 
 View Linear Models
 
-```{r}
-lm_sector_a
-lm_sector_b
-lm_sector_c
-lm_sector_d
+```{r, echo = FALSE}
+# lm_sector_a
+# lm_sector_b
+# lm_sector_c
+# lm_sector_d
 ```
 
 
@@ -87,7 +87,7 @@ lm_sector_d
 Marginal Cost of Abatement = (m)*Abatement + (b)
 
 ##### Sector A
-```{r}
+```{r, echo = FALSE}
 # -----------------
 # Sector A - linear model overlayed with MC curve
 # -----------------
@@ -120,7 +120,7 @@ stargazer(lm_sector_a, type = "html")
 ```
 
 ##### Sector B
-```{r B LM and MC}
+```{r B LM and MC, echo = FALSE}
 # -----------
 # Sector B - linear model overlayed with MC curve
 # -----------
@@ -150,7 +150,7 @@ stargazer(lm_sector_b, type = "html")
 ```
 
 ##### Sector C
-```{r}
+```{r, echo = FALSE}
 # -----------------
 # Sector C - linear model overlayed with MC curve
 # -----------------
@@ -181,7 +181,7 @@ ggplot() +
 stargazer(lm_sector_c, type = "html")
 ```
 ##### Sector D
-```{r}
+```{r, echo = FALSE}
 # -----------------
 # Sector D - linear model overlayed with MC curve
 # -----------------
@@ -212,7 +212,7 @@ ggplot() +
 stargazer(lm_sector_d, type = "html")
 ```
 
-```{r all sectors marginal abatement costs}
+```{r all sectors marginal abatement costs, echo = FALSE}
 # -----------
 # All sectors - Marginal abatement costs
 # -----------
@@ -248,7 +248,7 @@ ggplot() +
 
 ### Question 2
 ##### Demand for emissions
-```{r full demand curve}
+```{r full demand curve, echo = FALSE}
 # -----------
 # All sectors - demand curve
 # -----------
@@ -280,7 +280,7 @@ ggplot(data = full_demand_p_df, aes(y = p_pollution)) + # graph it
   geom_line(aes(x = c_pollution),
             color = "red") +
   geom_line(aes(x = d_pollution),
-            color = "coral") # +
+            color = "coral") +
   # geom_line(aes(x = total_pollution),
   #          color = "black") +
   scale_x_continuous(limits = c(0, 1000),
@@ -308,7 +308,9 @@ full_abatement_p_df <- full_abatement_p_df %>% # Calculate each sector's price..
   mutate(c_abatement = c_abatement(price_abatement)) %>% 
   mutate(d_abatement = d_abatement(price_abatement)) %>% 
   mutate(total_abatement_X = a_abatement + b_abatement + c_abatement)
+```
 
+```{r, echo = FALSE}
 ggplot(data = full_abatement_p_df, aes(y = price_abatement)) + # graph it
   geom_line(aes(x = a_abatement),
             color = "darkgreen") +
@@ -392,12 +394,12 @@ X_total_cost # So, they actually benefit.
 a_tax_abated <- a_abatement(abatement_tax) # Quantity each sector abates...
 b_tax_abated <- b_abatement(abatement_tax)
 c_tax_abated <- c_abatement(abatement_tax)
-a_tax_cost <- integrate(a_supply, lower = 0, upper = a_tax_abated) # Cost under the abatement curves
-b_tax_cost <- integrate(b_supply, lower = 0, upper = b_tax_abated)
-c_tax_cost <- integrate(c_supply, lower = 0, upper = c_tax_abated)
-a_tax_cost$value[1]
-b_tax_cost$value[1]
-c_tax_cost$value[1]
+a_tax_cost <- integrate(a_supply, lower = 0, upper = a_tax_abated)$value # Cost under the abatement curves
+b_tax_cost <- integrate(b_supply, lower = 0, upper = b_tax_abated)$value
+c_tax_cost <- integrate(c_supply, lower = 0, upper = c_tax_abated)$value
+a_tax_total_cost <- a_tax_abated*(abatement_tax) + a_tax_cost
+b_tax_total_cost <- b_tax_abated*(abatement_tax) + b_tax_cost
+c_tax_total_cost <- c_tax_abated*(abatement_tax) + c_tax_cost
 ```
 
 ##### (3) tax revenue generated:
@@ -445,7 +447,7 @@ actual_CT_c
 ## --------
 ## Total cost of a carbon cap to the country:
 ## --------
-country_cost_3c <- integrate(total_abatement_fx, 0, 300)$value
+country_cost_3c <- integrate(total_abatement_fx, 0, permit_trading_price)$value
 ```
 ##### (3)
 ```{r}
