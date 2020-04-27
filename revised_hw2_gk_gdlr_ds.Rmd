@@ -212,39 +212,41 @@ ggplot() +
 stargazer(lm_sector_d, type = "html")
 ```
 
-```{r all sectors marginal abatement costs, echo = FALSE}
+```{r all sectors marginal abatement costs}
 # -----------
 # All sectors - Marginal abatement costs
 # -----------
-ggplot() +
+abatement_plot <- ggplot() +
   geom_line(data = df_a,
             aes(x = abatement,
-                y = predict_df_a),
-            color = "darkgreen",
+                y = predict_df_a, color = "Sector A"),
             size = 1,
             alpha = 1) +
   geom_line(data = df_b,
-            aes(x = abatement, y = pred_b),
-            color = "lightsteelblue3",
+            aes(x = abatement, y = pred_b, color = "Sector B"),
             size = 1,
             alpha = 1) +
   geom_line(data = df_c,
             aes(x = abatement,
-                y = predict_df_c),
-            color = "red",
-            size = 1, 
+                y = predict_df_c, color = "Sector C"),
+            size = 1,
             alpha = 1) +
   geom_line(data = df_d,
             aes(x = abatement,
-                y = predict_df_d),
-            color = "coral",
-             size = 1, 
+                y = predict_df_d, color = "Sector D"),
+             size = 1,
              alpha = 1) +
   theme_light() +
   labs(title = "All sectors predicted marginal cost of abatement by abatement levels",
        x = "Abatement (Tons)",
-       y = "Marginal Cost ($/ton)")
+       y = "Marginal Cost ($/ton)")+
+  scale_color_manual(name = "Sectors",
+                     values = c("Sector A" = "darkgreen", "Sector B" = "lightsteelblue3", "Sector C" = "red", "Sector D" = "coral"))
+
+ggsave("abatement_plot.png", abatement_plot)
 ```
+
+
 
 ### Question 2
 ##### Demand for emissions
@@ -272,19 +274,28 @@ full_demand_p_df <- full_demand_p_df %>% # Calculate each sector's price..
   mutate(d_pollution = d_pollution(p_pollution)) %>% 
   mutate(total_pollution = a_pollution + b_pollution + c_pollution + d_pollution)
 
-ggplot(data = full_demand_p_df, aes(y = p_pollution)) + # graph it
-  geom_line(aes(x = a_pollution),
+demand_curve <- ggplot(data = full_demand_p_df) + 
+  geom_path(aes(y = p_pollution, x = a_pollution),
             color = "darkgreen") +
-  geom_line(aes(x = b_pollution),
+  geom_path(aes(y = p_pollution, x = b_pollution),
             color = "lightsteelblue3") +
-  geom_line(aes(x = c_pollution),
+  geom_path(aes(y = p_pollution, x = c_pollution),
             color = "red") +
-  geom_line(aes(x = d_pollution),
+  geom_path(aes(y = p_pollution, x = d_pollution),
             color = "coral") +
-  # geom_line(aes(x = total_pollution),
-  #          color = "black") +
-  scale_x_continuous(limits = c(0, 1000),
+  theme_light() +
+  labs(title = "All sectors predicted pollution demand by abatement levels",
+       x = "Pollution (Tons)",
+       y = "Marginal Cost ($/ton)")+
+  scale_color_manual(name = "Sectors",
+                     values = c("Sector A" = "darkgreen", "Sector B" = "lightsteelblue3", "Sector C" = "red", "Sector D" = "coral")) +
+  coord_flip() +
+  scale_x_continuous(limits = c(0, 300),
+                     expand = c(0,0)) +
+  scale_y_continuous(limits = c(0,250),
                      expand = c(0,0))
+
+ggsave("demand_curve.png", demand_curve)
 
 ```
 
@@ -423,24 +434,26 @@ permits_traded_b <- b_abatement(permit_trading_price)# This is the total q each 
 permits_traded_c <- c_abatement(permit_trading_price)
 permits_traded_a + permits_traded_b + permits_traded_c # Let's check that they add up to 300
 
-diff_a_3c <- integrate(a_abatement, permits_traded_a, 100)$value # Integrate to find costs per sector
-diff_b_3c <- integrate(b_abatement, permits_traded_b, 100)$value # The difference in cost between a CAP and a CAP AND TRADE to each sector.
-diff_c_3c <- integrate(c_abatement, permits_traded_c, 100)$value
+diff_a_3c <- integrate(a_demand, 100, 100 - permits_traded_a)$value # Integrate to find costs per sector
+diff_b_3c <- integrate(b_supply, 100, 100 - permits_traded_b)$value # The difference in cost between a CAP and a CAP AND TRADE to each sector.
+diff_c_3c <- integrate(c_supply, 100, 100 - permits_traded_b)$value
 
-cost_CT_a <- integrate(a_abatement, 0, permits_traded_a)$value # Integrate from 0 to new trading equilibrium to find the abatement costs to each sector.
-cost_CT_b <- integrate(b_abatement, 0, permits_traded_b)$value
-cost_CT_c <- integrate(c_abatement, 0, permits_traded_c)$value
+cost_CT_a <- integrate(a_supply, 0, permits_traded_a)$value # Integrate from 0 to new trading equilibrium to find the abatement costs to each sector.
+cost_CT_b <- integrate(b_supply, 0, permits_traded_b)$value
+cost_CT_c <- integrate(c_supply, 0, permits_traded_c)$value
 cost_CT_a
 cost_CT_b
 cost_CT_c
 
-actual_CT_a <- cost_CT_a + diff_a_3c
-actual_CT_b <- cost_CT_b + diff_b_3c
-actual_CT_c <- cost_CT_c + diff_c_3c
+actual_CT_a <- cost_CT_a + permit_trading_price * (100 - permits_traded_a)
+actual_CT_b <- cost_CT_b + permit_trading_price * (100 - permits_traded_b)
+actual_CT_c <- cost_CT_c + permit_trading_price * (100 - permits_traded_c)
 
 actual_CT_a
 actual_CT_b
 actual_CT_c
+
+actual_CT_a + actual_CT_b + actual_CT_c
 ```
 ##### (2)
 ``` {r}
@@ -487,4 +500,5 @@ c_total_Y <- c_Y_cost + c_Y_diff
 d_total_Y <- d_Y_cost + d_Y_diff
 
 cost_captrade_country_x <- integrate(total_abatement_p_fx, abatement_tax, price_Y_captrade)
+Y_final_profit = d_Y_cost + d_Y_diff
 ```
