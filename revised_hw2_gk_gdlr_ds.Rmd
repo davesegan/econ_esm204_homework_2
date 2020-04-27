@@ -302,7 +302,7 @@ For each policy:
 price_abatement <- seq(0,300, by = 10) # Make a list of prices
 full_abatement_p_df <- data.frame(price_abatement) # Add it into a df
 
-full_abatement_p_df <- full_demand_p_df %>% # Calculate each sector's price..
+full_abatement_p_df <- full_abatement_p_df %>% # Calculate each sector's price..
   mutate(a_abatement = a_abatement(price_abatement)) %>% 
   mutate(b_abatement = b_abatement(price_abatement)) %>%
   mutate(c_abatement = c_abatement(price_abatement)) %>% 
@@ -456,8 +456,8 @@ country_cost_3c <- integrate(total_abatement_fx, 0, 300)$value
 ##### Should country X (sector D) join a carbon cap and trade market in country Y?
 
 ```{r}
-full_abatement_p_df %>% 
-  mutate(agg_abatement_Y)
+full_abate_df_Y <- full_abatement_p_df %>% 
+  mutate(total_abate_Y <- sum)
 
 
 ```
