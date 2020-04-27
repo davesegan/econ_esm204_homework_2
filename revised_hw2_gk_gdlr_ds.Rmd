@@ -412,18 +412,18 @@ X_revenue_tax
 ##### c. Cap and trade
 ##### (1) Cost to Country X:
 ```{r}
-# Outcome of trading if each sector gets 100 carbon credits
+## -------
+## Outcome of trading if each sector gets 100 carbon credits
+## -----
 permit_trading_price <- total_abatement_p_fx(300) # First, get equilibrium trading price
 permits_traded_a <- a_abatement(permit_trading_price)# Now, plug into individual abatement functions
 permits_traded_b <- b_abatement(permit_trading_price)# This is the total q each sector abates
 permits_traded_c <- c_abatement(permit_trading_price)
 permits_traded_a + permits_traded_b + permits_traded_c # Let's check that they add up to 300
 
-### This isn't used ###
 diff_a_3c <- integrate(a_abatement, permits_traded_a, 100)$value # Integrate to find costs per sector
 diff_b_3c <- integrate(b_abatement, permits_traded_b, 100)$value # The difference in cost between a CAP and a CAP AND TRADE to each sector.
 diff_c_3c <- integrate(c_abatement, permits_traded_c, 100)$value
-### --- ###
 
 cost_CT_a <- integrate(a_abatement, 0, permits_traded_a)$value # Integrate from 0 to new trading equilibrium to find the abatement costs to each sector.
 cost_CT_b <- integrate(b_abatement, 0, permits_traded_b)$value
@@ -432,52 +432,37 @@ cost_CT_a
 cost_CT_b
 cost_CT_c
 
-# Total country cost
+actual_CT_a <- cost_CT_a + diff_a_3c
+actual_CT_b <- cost_CT_b + diff_b_3c
+actual_CT_c <- cost_CT_c + diff_c_3c
+
+actual_CT_a
+actual_CT_b
+actual_CT_c
+```
+##### (2)
+``` {r}
+## --------
+## Total cost of a carbon cap to the country:
+## --------
 country_cost_3c <- integrate(total_abatement_fx, 0, 300)$value
 ```
-
-
+##### (3)
 ```{r}
-# David can delete all of this
-
-# Sector efficient quantity to abate
-# When total quantity abated is 300, gives us a marginal cost - we want it to be the same for all sectors to be efficient. Then, abatement_fx gives us a q
-
-a_abate_ct <- a_abatement_fx(tot_abate_p_fx(300))
-
-b_abate_ct <- b_abatement_fx(tot_abate_p_fx(300))
-
-c_abate_ct <- c_abatement_fx(tot_abate_p_fx(300))
-
-# How do those values compare to if just reduced by 100?
-
-a_abate_no_trade <- 100
-b_abate_no_trade <- 100
-c_abate_no_trade <- 100
-
-# Units to be traded (negative means trading)
-
-a_trade <- a_abate_ct - a_abate_no_trade
-b_trade <- b_abate_ct - b_abate_no_trade
-c_trade <- c_abate_ct - c_abate_no_trade
-
-# Cost to each sector of just their abatement 
-a_ct_cost <- integrate(a_supply, lower = 0, upper = a_abate_ct)
-b_ct_cost <- integrate(b_supply, lower = 0, upper = b_abate_ct)
-c_ct_cost <- integrate(c_supply, lower = 0, upper = c_abate_ct)
-
-# Benefits / Costs of trade
-a_ct_net <- 2927.586 - (a_trade*tot_abate_p_fx(300))
-b_ct_net <- 3736.323 - (b_trade*tot_abate_p_fx(300))
-c_ct_net <- 1400.3 - (c_trade*tot_abate_p_fx(300))
-
-a_ct_net
-b_ct_net
-c_ct_net
+## Zero!
 ```
 
 ### Question 4
 ##### Should country X (sector D) join a carbon cap and trade market in country Y?
+
+```{r}
+full_abatement_p_df %>% 
+  mutate(agg_abatement_Y)
+
+
+```
+
+
 
 ```{r}
 # Country Y:
